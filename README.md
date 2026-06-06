@@ -15,16 +15,17 @@ This repository takes a **physics-first** approach:
 
 ---
 
-## 📊 Dataset Structure & Real REDD Data
+## 📊 Dataset Reference & REDD House 3 Subset
 
-Unlike synthetic datasets, which produce unrealistically high metrics ($R^2 > 0.95$), this model is validated on **real low-frequency data from House 3 of the Reference Energy Disaggregation Data Set (REDD)**. 
-
-The aligned training set (`house3_5devices_train.csv`) tracks five sub-metered appliances:
-*   `lighting2`
-*   `lighting5`
-*   `lighting4`
-*   `refrigerator` (Target Appliance)
-*   `microwave`
+Unlike synthetic datasets, which produce artificially inflated metrics ($R^2 > 0.95$), this pipeline is validated on a real-world benchmark:
+*   **Dataset:** REDD open dataset (Kolter & Johnson, 2011) — Reference Energy Disaggregation Data Set, consisting of actual smart meter measurements from homes in Massachusetts.
+*   **Subset:** Processed low-frequency active power measurements (~17s average sampling period) from **House 3**, containing 14,999 aligned samples spanning approximately 3 days of monitoring.
+*   **Appliance Circuits:** Tracks five sub-metered appliances:
+    *   `lighting2`
+    *   `lighting5`
+    *   `lighting4`
+    *   `refrigerator` (Cyclical load target)
+    *   `microwave` (High-power transient load target)
 
 The aggregate mains signal is constructed by summing the individual active sub-meters, mimicking the total monitored load.
 
@@ -41,16 +42,25 @@ For any timestamp $t$, the feature matrix includes:
 
 ## 📈 Model Performance & Honest Evaluation
 
-Evaluation is conducted using a strict **chronological split (80% train, 20% test)** to prevent data leakage (a common issue in sliding-window time-series splits).
+Evaluation is conducted using a strict **chronological split (70% train, 30% test)** to prevent data leakage (a common issue in sliding-window time-series splits).
 
-### Results on Real REDD Data
-*   **Mean Absolute Error (MAE)**: `17.91 Watts`
-*   **R² Score**: `0.464`
-*   **Relative Energy Error (RE)**: `4.76%`
+### Results on Real REDD House 3 Data
+Running the baseline RandomForest model yields:
+
+```
+appliance        MAE (W)  energy err  on/off F1
+-------------------------------------------------
+lighting2           22.3       22.0%       0.61
+lighting5           14.7       23.4%       0.63
+lighting4           22.4       22.9%       0.65
+refrigerator        16.2        6.8%       0.85
+microwave            0.5        3.2%       0.95
+```
 
 ### Engineering Takeaways
-1. **Low instantaneous $R^2$ ($0.464$)** is a realistic and honest performance indicator for low-frequency active power signals (sampled at ~17s intervals) without high-frequency voltage/current waveforms.
-2. **Extremely low Relative Energy Error ($4.76\%$)** shows that while instantaneous predictions are moderately fitted, the model is highly accurate at calculating the total accumulated energy consumption of the refrigerator over time, making it viable for billing and eco-feedback applications.
+1. **High Cycle Detection ($F_1$ score)**: The model successfully catches the ON/OFF states of the **microwave (0.95 F1)** and **refrigerator (0.85 F1)** using physics-informed features (such as step changes and rolling standby baselines) which isolate high-power cyclical and transient loads.
+2. **Low Energy Error**: Refrigerator energy consumption error is only **6.8%**, showing that while instantaneous point predictions are moderately fitted, the model is highly accurate at calculating the total accumulated energy consumption over time, making it viable for utility billing and eco-feedback applications.
+3. **Lighting Complexities**: Lighting circuits prove harder to model ($F_1 \approx 0.61 - 0.65$), reflecting the inherent overlap of low-power, non-cyclical active grid loads. This provides an honest, non-inflated baseline for grid engineers.
 
 ---
 
