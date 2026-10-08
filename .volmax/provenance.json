@@ -1,0 +1,25 @@
+{
+  "baseline_commit": "230b10c18cff15331e5c5c8b084f90a85657d488",
+  "baseline_tree": "a906d5a6d1778f701c3666693f35cd0e36253570",
+  "behavior": {
+    "callbacks": false,
+    "executable": false,
+    "network_calls": false,
+    "telemetry": false
+  },
+  "canonical_url": "https://github.com/VolMax-Studio/NILM_Disaggregation_Portfolio",
+  "default_branch_at_recording": "main",
+  "license": {
+    "detected_spdx": null,
+    "files": [],
+    "note": "This provenance record does not grant or alter license rights."
+  },
+  "owner": "VolMax-Studio",
+  "record_id": "urn:volmax:github:VolMax-Studio/NILM_Disaggregation_Portfolio:230b10c18cff15331e5c5c8b084f90a85657d488",
+  "record_type": "volmax.repository-provenance",
+  "record_version": 1,
+  "recorded_at": "2026-10-08T19:23:13+00:00",
+  "repository": "VolMax-Studio/NILM_Disaggregation_Portfolio",
+  "schema": "urn:volmax:provenance:v1",
+  "scope": "Repository identity and baseline commit only; historical tags, releases, evidence, authorship, and existing file bytes are unchanged."
+}
